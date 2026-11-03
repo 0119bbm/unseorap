@@ -31,7 +31,7 @@ $('form').addEventListener('submit',e=>{e.preventDefault();const btn=$('draw');i
 $('copy').addEventListener('click',async()=>{const text=[$('dateLabel').textContent,$('displayName').textContent+'님의 오늘의 운세',$('score').textContent,$('message').textContent,'재물운: '+$('money').textContent,'애정운: '+$('love').textContent,'일상운: '+$('daily').textContent,$('lucky').textContent,'운서랍 · 체험형 운세'].join('\n');try{await navigator.clipboard.writeText(text);$('copy').textContent='복사 완료 ✓';setTimeout(()=>$('copy').textContent='결과 복사하기',1600)}catch{window.prompt('아래 내용을 복사해 주세요.',text)}});$('again').addEventListener('click',()=>{$('products').classList.remove('hidden');$('again').setAttribute('aria-expanded','true');$('products').focus({preventScroll:true});$('products').scrollIntoView({behavior:'smooth',block:'start'})});$('closeProducts').addEventListener('click',()=>{$('products').classList.add('hidden');$('again').setAttribute('aria-expanded','false');$('result').focus({preventScroll:true});$('result').scrollIntoView({behavior:'smooth',block:'start'})})
 
 /* 운서랍 방문 통계: 동의한 경우에만 활성화 */
-(function () {
+;(function () {
   const MEASUREMENT_ID = 'G-9K25M651NQ';
   const CONSENT_KEY = 'unseorap_analytics_consent';
 
