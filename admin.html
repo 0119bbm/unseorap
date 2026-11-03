@@ -1,0 +1,144 @@
+
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>운서랍 | 관리자 로그인</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: #f7f1e9;
+      color: #493a34;
+      font-family: "Malgun Gothic", sans-serif;
+    }
+    .card {
+      width: 100%;
+      max-width: 440px;
+      padding: 38px 26px;
+      border-radius: 22px;
+      background: #fffcf9;
+      border: 1px solid #ead7c4;
+      box-shadow: 0 12px 35px #80604e20;
+      text-align: center;
+    }
+    h1 { font-size: 25px; margin: 12px 0; }
+    p { font-size: 13px; line-height: 1.8; }
+    .brand { color: #ad8455; letter-spacing: 3px; }
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 15px 20px;
+      background: #80604e;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      margin-top: 15px;
+    }
+    .uid {
+      background: #f7f1e9;
+      padding: 12px;
+      border-radius: 10px;
+      overflow-wrap: anywhere;
+      font-size: 12px;
+      user-select: all;
+    }
+    .hidden { display: none; }
+    #status { color: #85766d; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">UNSEORAP</div>
+    <h1>🔐 운서랍 관리자</h1>
+    <p>관리자 계정 확인을 위한 로그인 페이지</p>
+
+    <div id="loginArea">
+      <button id="loginBtn" disabled>
+        Google 계정으로 로그인
+      </button>
+    </div>
+
+    <div id="userArea" class="hidden">
+      <p id="userName"></p>
+      <p>Firebase 사용자 UID</p>
+      <div id="uid" class="uid"></div>
+      <button id="logoutBtn">로그아웃</button>
+    </div>
+
+    <p id="status">Firebase 연결 중...</p>
+    <p style="font-size:11px;color:#93857c">
+      고객 정보 조회 기능은 아직 연결되지 않았습니다.
+    </p>
+  </div>
+
+  <script type="module">
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAMJeMJNZutEbvX02dd-lqJOkMnbTPYK8M",
+      authDomain: "unseorap.firebaseapp.com",
+      projectId: "unseorap",
+      storageBucket: "unseorap.firebasestorage.app",
+      messagingSenderId: "710599627829",
+      appId: "1:710599627829:web:b33121c0c0ed1b31274d7c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const loginBtn = document.getElementById("loginBtn");
+    const status = document.getElementById("status");
+
+    loginBtn.disabled = false;
+    status.textContent = "Google 로그인 준비 완료";
+
+    loginBtn.addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        status.textContent = "로그인 오류: " + error.code;
+      }
+    });
+
+    document.getElementById("logoutBtn")
+      .addEventListener("click", async () => {
+        await signOut(auth);
+      });
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        document.getElementById("loginArea")
+          .classList.add("hidden");
+        document.getElementById("userArea")
+          .classList.remove("hidden");
+        document.getElementById("userName").textContent =
+          (user.displayName || "사용자") + "님 로그인됨";
+        document.getElementById("uid").textContent = user.uid;
+        status.textContent = "로그인 성공";
+      } else {
+        document.getElementById("loginArea")
+          .classList.remove("hidden");
+        document.getElementById("userArea")
+          .classList.add("hidden");
+        status.textContent = "로그인해 주세요";
+      }
+    });
+  </script>
+</body>
+</html>
