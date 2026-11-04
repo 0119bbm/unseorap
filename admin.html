@@ -49,13 +49,18 @@
       </div>
       <div id="status" class="state" role="status" aria-live="polite">고객 목록을 확인하는 중...</div>
       <div class="count">저장된 고객: <b id="count">—</b>명</div>
+      <div class="retention-tools">
+        <p>보관 기간 만료 고객: <strong id="expiredCount">—</strong>명</p>
+        <button id="deleteExpiredBtn" class="danger-solid" type="button" disabled>만료 고객 일괄 삭제</button>
+      </div>
+      <div class="retention-note">보관 만료일은 저장 시각으로부터 1년 후입니다. 자동 삭제가 아니므로 정기적으로 접속해 확인하고 삭제해 주세요.</div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>이름·별명</th><th>생년월일</th><th>양력/음력</th><th>태어난 시간</th><th>동의 버전</th><th>저장 시각</th><th>관리</th></tr></thead>
-          <tbody id="customers"><tr><td colspan="7" class="empty">고객 정보가 없습니다.</td></tr></tbody>
+          <thead><tr><th>이름·별명</th><th>생년월일</th><th>양력/음력</th><th>태어난 시간</th><th>동의 버전</th><th>저장 시각</th><th>보관 만료일</th><th>보관 상태</th><th>관리</th></tr></thead>
+          <tbody id="customers"><tr><td colspan="9" class="empty">고객 정보가 없습니다.</td></tr></tbody>
         </table>
       </div>
-      <p class="policy">고객 목록은 Firebase 보안 규칙에서 권한을 부여한 계정만 읽을 수 있습니다. 삭제는 복구할 수 없으니 주의해 주세요. 고객 정보의 보관 기간과 삭제 요청 절차는 별도로 관리해야 합니다.</p>
+      <p class="policy">고객 목록은 Firebase 보안 규칙에서 권한을 부여한 계정만 읽을 수 있습니다. 삭제는 복구할 수 없으니 주의해 주세요. 이 화면의 만료 관리와 일괄 삭제는 관리자가 직접 실행하는 기능이며, 자동 삭제가 아닙니다. 생성 시각이 없는 기존 데이터는 만료 여부를 계산할 수 없으므로 별도로 확인하세요. 고객의 조기 삭제 요청도 개별 처리해야 합니다.</p>
     </section>
   </main>
   <script type="module">
@@ -98,6 +103,23 @@
     const $ = id => document.getElementById(id);
     const status = $('status');
     let pendingLoad = 0;
+    let expiredRecords = [];
+    let bulkDeleting = false;
+
+    // UTC 기준으로 저장 시각의 1주년을 계산합니다. (윤일은 다음 해 3월 1일로 보정)
+    function expirationDate(value) {
+      if (!value || typeof value.toDate !== 'function') return null;
+      const original = value.toDate();
+      if (Number.isNaN(original.getTime())) return null;
+      const expiry = new Date(original.getTime());
+      expiry.setUTCFullYear(expiry.getUTCFullYear() + 1);
+      return expiry;
+    }
+
+    function refreshExpiryControls() {
+      $('expiredCount').textContent = String(expiredRecords.length);
+      $('deleteExpiredBtn').disabled = bulkDeleting || expiredRecords.length === 0 || !auth.currentUser;
+    }
 
     $('loginBtn').disabled = false;
     $('loginStatus').textContent = 'Google 로그인 준비 완료';
@@ -109,6 +131,39 @@
     });
     $('logoutBtn').addEventListener('click', () => signOut(auth));
     $('refreshBtn').addEventListener('click', loadCustomers);
+    $('deleteExpiredBtn').addEventListener('click', async () => {
+      if (bulkDeleting || !auth.currentUser || expiredRecords.length === 0) return;
+      // 직전에 조회한 만료 목록만 대상으로 하며, 사용자 확인 후 실제 삭제합니다.
+      const items = [...expiredRecords];
+      const userUid = auth.currentUser.uid;
+      if (!confirm(`보관 기간이 지난 고객 ${items.length}명의 정보를 영구 삭제할까요?\n이 작업은 복구할 수 없습니다.`)) return;
+      bulkDeleting = true;
+      ++pendingLoad;
+      $('refreshBtn').disabled = true;
+      refreshExpiryControls();
+      let success = 0, failed = 0;
+      status.textContent = `만료 고객 ${items.length}명 삭제 중...`;
+      try {
+        for (const item of items) {
+          if (auth.currentUser?.uid !== userUid) break;
+          try {
+            await deleteDoc(doc(db, 'customers', item.id));
+            success++;
+          } catch (error) {
+            failed++;
+            console.error('만료 고객 삭제 실패:', item.id, error.code || error.message);
+          }
+        }
+      } finally {
+        bulkDeleting = false;
+        if (auth.currentUser?.uid === userUid) {
+          await loadCustomers();
+          status.textContent = `만료 고객 삭제 결과: ${success}명 삭제, ${failed}명 실패.${failed ? ' 실패한 항목은 다시 확인해 주세요.' : ''}`;
+        } else {
+          $('refreshBtn').disabled = false;
+        }
+      }
+    });
 
     function formatDate(value) {
       if (!value || typeof value.toDate !== 'function') return '—';
@@ -130,22 +185,35 @@
       const loadId = ++pendingLoad;
       status.textContent = '고객 정보를 불러오는 중...';
       $('refreshBtn').disabled = true;
+      $('deleteExpiredBtn').disabled = true;
       try {
         const snapshot = await getDocs(collection(db, 'customers'));
         if (loadId !== pendingLoad || auth.currentUser?.uid !== user.uid) return;
         const records = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         records.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
         $('count').textContent = String(records.length);
+        const now = new Date();
+        expiredRecords = records.filter(item => {
+          const expires = expirationDate(item.createdAt);
+          return expires !== null && expires.getTime() <= now.getTime();
+        });
+        refreshExpiryControls();
         const tbody = $('customers');
         tbody.replaceChildren();
         for (const item of records) {
           const row = document.createElement('tr');
+          const expires = expirationDate(item.createdAt);
+          const isExpired = expires !== null && expires.getTime() <= now.getTime();
+          if (isExpired) row.classList.add('expired-row');
           cell(row, item.name);
           cell(row, item.birthDate);
           cell(row, item.calendarType === 'solar' ? '양력' : item.calendarType === 'lunar' ? '음력' : '—');
           cell(row, item.birthHour === 'unknown' ? '모름' : item.birthHour == null ? '—' : item.birthHour + '시');
           cell(row, item.consentVersion);
           cell(row, formatDate(item.createdAt));
+          cell(row, expires ? expires.toLocaleString('ko-KR', {timeZone: 'Asia/Seoul'}) : '확인 필요');
+          const expiryCell = cell(row, !expires ? '날짜 없음 · 확인 필요' : isExpired ? '만료 · 삭제 대상' : '보관 중');
+          expiryCell.className = isExpired ? 'expiry-expired' : 'expiry-pending';
           const actionCell = document.createElement('td');
           const remove = document.createElement('button');
           remove.className = 'danger';
@@ -170,7 +238,7 @@
         if (!records.length) {
           const row = document.createElement('tr');
           const td = cell(row, '저장된 고객 정보가 없습니다.');
-          td.colSpan = 7;
+          td.colSpan = 9;
           td.className = 'empty';
           tbody.appendChild(row);
         }
@@ -178,15 +246,18 @@
       } catch (e) {
         if (loadId !== pendingLoad) return;
         $('count').textContent = '—';
+        expiredRecords = [];
+        $('expiredCount').textContent = '—';
+        $('deleteExpiredBtn').disabled = true;
         $('customers').replaceChildren();
         const row = document.createElement('tr');
         const td = cell(row, '접근 권한 또는 연결 상태를 확인해 주세요.');
-        td.colSpan = 7;
+        td.colSpan = 9;
         td.className = 'empty';
         $('customers').appendChild(row);
         status.textContent = friendlyError(e);
       } finally {
-        if (loadId === pendingLoad) $('refreshBtn').disabled = false;
+        if (loadId === pendingLoad) { $('refreshBtn').disabled = false; refreshExpiryControls(); }
       }
     }
     onAuthStateChanged(auth, user => {
@@ -200,6 +271,9 @@
         $('loginArea').classList.remove('hidden');
         $('dashboard').classList.add('hidden');
         $('count').textContent = '—';
+        expiredRecords = [];
+        $('expiredCount').textContent = '—';
+        $('deleteExpiredBtn').disabled = true;
         $('customers').replaceChildren();
       }
     });
