@@ -67,14 +67,16 @@
     (async () => {
     try {
       loginStatus.textContent = 'Firebase 연결 중...';
-      const [appSdk, authSdk, firestoreSdk] = await Promise.all([
+      const [appSdk, authSdk, firestoreSdk, appCheckSdk] = await Promise.all([
         import('https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js'),
         import('https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js'),
-        import('https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js')
+        import('https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js'),
+        import('https://www.gstatic.com/firebasejs/13.2.0/firebase-app-check.js')
       ]);
       const { initializeApp } = appSdk;
       const { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } = authSdk;
       const { getFirestore, collection, getDocs, doc, deleteDoc } = firestoreSdk;
+      const { initializeAppCheck, ReCaptchaEnterpriseProvider } = appCheckSdk;
 
     const firebaseConfig = {
       apiKey: 'AIzaSyAMJeMJNZutEbvX02dd-lqJOkMnbTPYK8M',
@@ -86,6 +88,10 @@
     };
 
     const app = initializeApp(firebaseConfig);
+    initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider('6LfPrw4uAAAAANSN4_wuf03gB5W3Vr72Z1etpB93'),
+      isTokenAutoRefreshEnabled: true
+    });
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
