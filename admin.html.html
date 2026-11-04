@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>운서랍 | 관리자</title>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;background:#f7f1e9;color:#493a34;font-family:system-ui,-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;padding:32px 16px}
+    .wrap{max-width:1050px;margin:0 auto}
+    .card{background:#fffcf9;border:1px solid #ead7c4;border-radius:22px;box-shadow:0 12px 35px #80604e18;padding:30px 25px}
+    .brand{color:#ad8455;letter-spacing:.25em;font-size:12px;text-align:center}
+    h1{font-size:25px;text-align:center;margin:12px 0 5px}h2{font-size:18px;margin:0}
+    p{font-size:13px;line-height:1.7}.intro{text-align:center;color:#85766d;margin:0 0 20px}
+    button{border:0;border-radius:11px;padding:12px 17px;background:#80604e;color:#fff;cursor:pointer;font-size:13px;font-weight:600}
+    button:hover{background:#6f5141}button:disabled{opacity:.55;cursor:wait}
+    .secondary{background:#eee4da;color:#493a34}.secondary:hover{background:#e5d6c8}
+    .danger{background:#fff4f1;color:#a1352a;border:1px solid #edc2b7}.danger:hover{background:#ffe7e1}
+    .hidden{display:none!important}.login{text-align:center;max-width:460px;margin:8vh auto 0}
+    .login button{margin-top:10px}.head{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}.muted{color:#85766d}.small{font-size:12px}
+    .state{background:#f7f1e9;border-radius:12px;padding:12px 14px;margin:18px 0;line-height:1.65;font-size:13px;white-space:pre-wrap}
+    .count{margin:15px 0;font-size:14px}.count b{font-size:23px;color:#80604e}
+    .table-wrap{overflow:auto;border:1px solid #ead7c4;border-radius:13px}
+    table{border-collapse:collapse;width:100%;min-width:770px;text-align:left;font-size:12px}
+    th,td{padding:13px 12px;border-bottom:1px solid #eee5dc;vertical-align:top}
+    th{background:#f7f1e9;color:#765a48;white-space:nowrap}tr:last-child td{border-bottom:0}
+    .empty{text-align:center;padding:30px 10px;color:#85766d}
+    .policy{font-size:12px;color:#85766d;line-height:1.7;margin-top:16px}
+    .pill{font-size:11px;background:#eee4da;color:#765a48;border-radius:999px;padding:4px 8px;display:inline-block}
+    @media(max-width:600px){.card{padding:24px 14px}.head{align-items:flex-start}.actions{width:100%}.actions button{flex:1}}
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <div class="brand">UNSEORAP</div>
+    <h1>🔐 운서랍 관리자</h1>
+    <p class="intro">고객 정보 조회 및 삭제 · 관리자 전용</p>
+    <section id="loginArea" class="card login">
+      <p>등록된 관리자 Google 계정으로 로그인해 주세요.</p>
+      <button id="loginBtn" disabled>Google 계정으로 로그인</button>
+      <p id="loginStatus" class="muted">Firebase 연결 중...</p>
+    </section>
+    <section id="dashboard" class="card hidden" aria-label="고객 관리 대시보드">
+      <div class="head">
+        <div><h2>고객 정보 관리 <span class="pill">관리자 전용</span></h2><p id="userName" class="muted"></p></div>
+        <div class="actions"><button id="refreshBtn" class="secondary">새로고침</button><button id="logoutBtn" class="secondary">로그아웃</button></div>
+      </div>
+      <div id="status" class="state" role="status" aria-live="polite">고객 목록을 확인하는 중...</div>
+      <div class="count">저장된 고객: <b id="count">—</b>명</div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>이름·별명</th><th>생년월일</th><th>양력/음력</th><th>태어난 시간</th><th>동의 버전</th><th>저장 시각</th><th>관리</th></tr></thead>
+          <tbody id="customers"><tr><td colspan="7" class="empty">고객 정보가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+      <p class="policy">고객 목록은 Firebase 보안 규칙에서 권한을 부여한 계정만 읽을 수 있습니다. 삭제는 복구할 수 없으니 주의해 주세요. 고객 정보의 보관 기간과 삭제 요청 절차는 별도로 관리해야 합니다.</p>
+    </section>
+  </main>
+  <script type="module">
+    const loginStatus = document.getElementById('loginStatus');
+    if (location.protocol === 'file:') {
+      loginStatus.textContent = '다운로드 파일에서는 로그인할 수 없어요. GitHub에 admin.html로 업로드한 뒤 운서랍 사이트 주소로 접속해 주세요.';
+      loginStatus.style.color = '#a1352a';
+    } else {
+    (async () => {
+    try {
+      loginStatus.textContent = 'Firebase 연결 중...';
+      const [appSdk, authSdk, firestoreSdk] = await Promise.all([
+        import('https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js'),
+        import('https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js'),
+        import('https://www.gstatic.com/firebasejs/13.2.0/firebase-firestore.js')
+      ]);
+      const { initializeApp } = appSdk;
+      const { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } = authSdk;
+      const { getFirestore, collection, getDocs, doc, deleteDoc } = firestoreSdk;
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyAMJeMJNZutEbvX02dd-lqJOkMnbTPYK8M',
+      authDomain: 'unseorap.firebaseapp.com',
+      projectId: 'unseorap',
+      storageBucket: 'unseorap.firebasestorage.app',
+      messagingSenderId: '710599627829',
+      appId: '1:710599627829:web:b33121c0c0ed1b31274d7c'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+    const $ = id => document.getElementById(id);
+    const status = $('status');
+    let pendingLoad = 0;
+
+    $('loginBtn').disabled = false;
+    $('loginStatus').textContent = 'Google 로그인 준비 완료';
+    $('loginBtn').addEventListener('click', async () => {
+      $('loginBtn').disabled = true;
+      try { await signInWithPopup(auth, provider); }
+      catch (e) { $('loginStatus').textContent = '로그인 오류: ' + (e.code || '알 수 없음'); }
+      finally { $('loginBtn').disabled = false; }
+    });
+    $('logoutBtn').addEventListener('click', () => signOut(auth));
+    $('refreshBtn').addEventListener('click', loadCustomers);
+
+    function formatDate(value) {
+      if (!value || typeof value.toDate !== 'function') return '—';
+      return value.toDate().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
+    }
+    function cell(row, value) {
+      const td = document.createElement('td');
+      td.textContent = value == null ? '—' : String(value);
+      row.appendChild(td);
+      return td;
+    }
+    function friendlyError(error) {
+      if (error?.code === 'permission-denied') return '고객 목록 접근이 거부됐습니다. Firestore 규칙이 게시됐는지, 로그인한 Google 계정의 UID가 관리자 UID와 일치하는지 확인해 주세요. App Check 강제 적용 여부도 확인해 주세요.';
+      return '고객 목록을 불러오지 못했습니다: ' + (error?.code || error?.message || '알 수 없는 오류');
+    }
+    async function loadCustomers() {
+      const user = auth.currentUser;
+      if (!user) return;
+      const loadId = ++pendingLoad;
+      status.textContent = '고객 정보를 불러오는 중...';
+      $('refreshBtn').disabled = true;
+      try {
+        const snapshot = await getDocs(collection(db, 'customers'));
+        if (loadId !== pendingLoad || auth.currentUser?.uid !== user.uid) return;
+        const records = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        records.sort((a,b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+        $('count').textContent = String(records.length);
+        const tbody = $('customers');
+        tbody.replaceChildren();
+        for (const item of records) {
+          const row = document.createElement('tr');
+          cell(row, item.name);
+          cell(row, item.birthDate);
+          cell(row, item.calendarType === 'solar' ? '양력' : item.calendarType === 'lunar' ? '음력' : '—');
+          cell(row, item.birthHour === 'unknown' ? '모름' : item.birthHour == null ? '—' : item.birthHour + '시');
+          cell(row, item.consentVersion);
+          cell(row, formatDate(item.createdAt));
+          const actionCell = document.createElement('td');
+          const remove = document.createElement('button');
+          remove.className = 'danger';
+          remove.textContent = '삭제';
+          remove.type = 'button';
+          remove.addEventListener('click', async () => {
+            if (!confirm('선택한 고객 정보를 영구 삭제할까요? 이 작업은 되돌릴 수 없습니다.')) return;
+            remove.disabled = true;
+            try {
+              await deleteDoc(doc(db, 'customers', item.id));
+              await loadCustomers();
+              status.textContent = '선택한 고객 정보를 삭제했습니다.';
+            } catch (e) {
+              remove.disabled = false;
+              status.textContent = '삭제 실패: ' + (e.code || e.message);
+            }
+          });
+          actionCell.appendChild(remove);
+          row.appendChild(actionCell);
+          tbody.appendChild(row);
+        }
+        if (!records.length) {
+          const row = document.createElement('tr');
+          const td = cell(row, '저장된 고객 정보가 없습니다.');
+          td.colSpan = 7;
+          td.className = 'empty';
+          tbody.appendChild(row);
+        }
+        status.textContent = records.length ? '고객 목록을 안전하게 불러왔습니다.' : '조회 성공! 아직 저장된 고객이 없습니다. (정상)';
+      } catch (e) {
+        if (loadId !== pendingLoad) return;
+        $('count').textContent = '—';
+        $('customers').replaceChildren();
+        const row = document.createElement('tr');
+        const td = cell(row, '접근 권한 또는 연결 상태를 확인해 주세요.');
+        td.colSpan = 7;
+        td.className = 'empty';
+        $('customers').appendChild(row);
+        status.textContent = friendlyError(e);
+      } finally {
+        if (loadId === pendingLoad) $('refreshBtn').disabled = false;
+      }
+    }
+    onAuthStateChanged(auth, user => {
+      ++pendingLoad;
+      if (user) {
+        $('loginArea').classList.add('hidden');
+        $('dashboard').classList.remove('hidden');
+        $('userName').textContent = (user.displayName || '사용자') + '님 로그인됨';
+        loadCustomers();
+      } else {
+        $('loginArea').classList.remove('hidden');
+        $('dashboard').classList.add('hidden');
+        $('count').textContent = '—';
+        $('customers').replaceChildren();
+      }
+    });
+    } catch (error) {
+      loginStatus.textContent = 'Firebase 연결 실패: ' + (error?.message || '알 수 없는 오류') + ' · 인터넷 연결 또는 브라우저 확장 프로그램을 확인해 주세요.';
+      loginStatus.style.color = '#a1352a';
+    }
+    })();
+    }
+  </script>
+</body>
+</html>
