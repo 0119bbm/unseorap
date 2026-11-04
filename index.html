@@ -24,7 +24,7 @@
 .customer-consent input[type=checkbox]{width:17px;height:17px;flex:0 0 17px;margin:2px 0 0;accent-color:#80604e}
 .customer-consent p{font-size:11px;line-height:1.7;margin:8px 0 0;color:#85766d}
 .customer-consent .storage-status{font-size:11px;color:#8b5e43;font-weight:650}
-</style></head><body><main class="wrap"><div class="eyebrow">UNSEORAP · DAILY FORTUNE</div><h1>오늘의 운을 뽑아보세요</h1><p class="intro">작은 캡슐 하나에 담긴 오늘의 메시지.<br>당신의 하루에 조용한 행운이 찾아오길.</p><div class="layout"><section class="machine-area" aria-label="운세 캡슐 자판기"><div class="halo"></div><div class="machine" id="machine"><div class="brand">운서랍<small>FORTUNE CAPSULE</small></div><div class="glass"><div class="caps"><div class="cap"></div><div class="cap"></div><div class="cap"></div><div class="cap"></div><div class="cap"></div><div class="cap"></div><div class="cap"></div></div></div><div class="controls"><div class="dial">✧</div><div class="coin">LUCK TOKEN</div></div><div class="chute"></div></div><div class="drop hidden" id="drop"></div></section><section class="panel"><h2>나만의 오늘의 캡슐 ✨</h2><p>정보를 입력하고 버튼을 누르면 오늘의 운세 캡슐이 나와요.</p><form id="form"><label class="field" for="name">이름 또는 별명</label><input id="name" maxlength="20" placeholder="예) 행운이" required autocomplete="nickname"><label class="field" for="birth">생년월일</label><input id="birth" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19950823" autocomplete="bday" aria-describedby="birthHelp" required><div id="birthHelp" class="birth-help">생년월일 8자리 숫자로 입력해 주세요. (예: 19950823)</div><label class="field" for="calendar">양력 / 음력</label><select id="calendar"><option value="solar">양력</option><option value="lunar">음력 (체험형 운세에만 사용)</option></select><label class="field" for="hour">태어난 시간</label><select id="hour"><option value="unknown">모름</option></select><div class="customer-consent" id="customerConsentSection"><label for="customerConsent"><input type="checkbox" id="customerConsent" disabled><span><strong>[선택] 운세 이용 정보 저장에 동의합니다</strong></span></label><p>수집 항목: 이름 또는 별명, 생년월일, 양력/음력, 태어난 시간. 수집 목적: 동의한 고객의 무료 운세 이용 기록 관리. 보관 기간: 수집일로부터 1년(기간 중 삭제 요청 시 조기 삭제). 삭제 요청: 운서랍 카카오톡 채널을 통해 접수. 동의하지 않아도 무료 운세를 이용할 수 있습니다. <a href="https://pf.kakao.com/_xnkIxeX" target="_blank" rel="noopener noreferrer">삭제 요청 채널</a></p><p class="storage-status" id="customerStorageStatus">🔒 보안 검증 전: 고객 정보 저장이 꺼져 있습니다.</p></div><button class="primary" id="draw" type="submit">✦ 무료 운세 캡슐 뽑기</button><div class="fine">하루 한 번 같은 정보로 뽑으면 같은 결과가 나와요.<br>선택 동의하지 않으면 입력한 정보는 저장되지 않습니다. 동의한 경우에만 Firebase에 전송됩니다.</div></form></section></div><section id="result" class="result hidden" aria-live="polite" tabindex="-1"><div class="eyebrow" id="dateLabel"></div><h2><span id="displayName"></span>님의 오늘의 운세</h2><div class="score" id="score"></div><p class="message" id="message"></p><div class="fortune-grid"><div>💰 재물운<strong id="money"></strong></div><div>💕 애정운<strong id="love"></strong></div><div>🌿 일상운<strong id="daily"></strong></div></div><p class="message" id="lucky"></p><div class="result-actions"><button class="secondary" id="copy" type="button">결과 복사하기</button><button class="cta-main" id="again" type="button" aria-controls="products" aria-expanded="false">🔑 내 사주 더 깊이 알아보기</button></div><div class="cta-hint">맞춤 사주 리포트 상품 안내 · 카카오톡 채널에서 신청</div><div class="notice">이 운세는 재미와 자기성찰을 위한 체험형 콘텐츠이며, 실제 사주 명식·만세력에 기반한 개인별 해석은 아닙니다. 중요한 결정을 대신하지 않습니다.</div></section><section id="products" class="product-view hidden" aria-label="운서랍 사주 리포트 상품 안내" tabindex="-1"><div class="eyebrow">UNSEORAP · FORTUNE REPORT</div><h2>나만의 운의 서랍 열기 🔑</h2><p>나에게 맞는 사주 리포트를 살펴보세요.</p><img class="product-poster" src="운서랍_수정본2.png" alt="운서랍 사주 리포트 상품 및 가격 안내" loading="lazy"><a class="product-kakao" href="https://pf.kakao.com/_xnkIxeX" target="_blank" rel="noopener noreferrer">💬 카카오톡으로 상품 신청하기</a><button class="secondary product-close" id="closeProducts" type="button">← 운세 결과로 돌아가기</button></section><div class="footer">© UNSEORAP · 나에게 감춰져 있던 운을 꺼내는 시간</div></main><script>
+</style></head><body><main class="wrap"><div class="eyebrow">UNSEORAP · DAILY FORTUNE</div><h1>오늘의 운을 뽑아보세요</h1><p class="intro">작은 캡슐 하나에 담긴 오늘의 메시지.<br>당신의 하루에 조용한 행운이 찾아오길.</p><div class="layout"><section class="machine-area" aria-label="운세 캡슐 자판기"><div class="halo"></div><div class="machine" id="machine"><div class="brand">운서랍<small>FORTUNE CAPSULE</small></div><div class="glass"><div class="caps"><div class="cap"></div><div class="cap"></div><div class="cap"></div><div class="cap"></div><div class="cap"></div><div class="cap"></div><div class="cap"></div></div></div><div class="controls"><div class="dial">✧</div><div class="coin">LUCK TOKEN</div></div><div class="chute"></div></div><div class="drop hidden" id="drop"></div></section><section class="panel"><h2>나만의 오늘의 캡슐 ✨</h2><p>정보를 입력하고 버튼을 누르면 오늘의 운세 캡슐이 나와요.</p><form id="form"><label class="field" for="name">이름 또는 별명</label><input id="name" maxlength="20" placeholder="예) 행운이" required autocomplete="nickname"><label class="field" for="birth">생년월일</label><input id="birth" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19950823" autocomplete="bday" aria-describedby="birthHelp" required><div id="birthHelp" class="birth-help">생년월일 8자리 숫자로 입력해 주세요. (예: 19950823)</div><label class="field" for="calendar">양력 / 음력</label><select id="calendar"><option value="solar">양력</option><option value="lunar">음력 (체험형 운세에만 사용)</option></select><label class="field" for="hour">태어난 시간</label><select id="hour"><option value="unknown">모름</option></select><div class="customer-consent" id="customerConsentSection"><label for="customerConsent"><input type="checkbox" id="customerConsent" disabled><span><strong>[선택] 운세 이용 정보 저장에 동의합니다</strong></span></label><p>수집 항목: 이름 또는 별명, 생년월일, 양력/음력, 태어난 시간. 수집 목적: 동의한 고객의 무료 운세 이용 기록 관리. 보관 기간: 수집일로부터 1년(기간 중 삭제 요청 시 조기 삭제). 삭제 요청: 운서랍 카카오톡 채널을 통해 접수. 동의하지 않아도 무료 운세를 이용할 수 있습니다. <a href="https://pf.kakao.com/_xnkIxeX" target="_blank" rel="noopener noreferrer">삭제 요청 채널</a></p><p class="storage-status" id="customerStorageStatus">🔒 보안 검증 전: 고객 정보 저장이 꺼져 있습니다.</p></div><button class="primary" id="draw" type="submit">✦ 무료 운세 캡슐 뽑기</button><div class="fine">하루 한 번 같은 정보로 뽑으면 같은 결과가 나와요.<br>선택 동의하지 않으면 입력한 정보는 저장되지 않습니다. 선택 동의한 경우에만 고객 정보를 Firebase에 전송합니다.</div></form></section></div><section id="result" class="result hidden" aria-live="polite" tabindex="-1"><div class="eyebrow" id="dateLabel"></div><h2><span id="displayName"></span>님의 오늘의 운세</h2><div class="score" id="score"></div><p class="message" id="message"></p><div class="fortune-grid"><div>💰 재물운<strong id="money"></strong></div><div>💕 애정운<strong id="love"></strong></div><div>🌿 일상운<strong id="daily"></strong></div></div><p class="message" id="lucky"></p><div class="result-actions"><button class="secondary" id="copy" type="button">결과 복사하기</button><button class="cta-main" id="again" type="button" aria-controls="products" aria-expanded="false">🔑 내 사주 더 깊이 알아보기</button></div><div class="cta-hint">맞춤 사주 리포트 상품 안내 · 카카오톡 채널에서 신청</div><div class="notice">이 운세는 재미와 자기성찰을 위한 체험형 콘텐츠이며, 실제 사주 명식·만세력에 기반한 개인별 해석은 아닙니다. 중요한 결정을 대신하지 않습니다.</div></section><section id="products" class="product-view hidden" aria-label="운서랍 사주 리포트 상품 안내" tabindex="-1"><div class="eyebrow">UNSEORAP · FORTUNE REPORT</div><h2>나만의 운의 서랍 열기 🔑</h2><p>나에게 맞는 사주 리포트를 살펴보세요.</p><img class="product-poster" src="운서랍_수정본2.png" alt="운서랍 사주 리포트 상품 및 가격 안내" loading="lazy"><a class="product-kakao" href="https://pf.kakao.com/_xnkIxeX" target="_blank" rel="noopener noreferrer">💬 카카오톡으로 상품 신청하기</a><button class="secondary product-close" id="closeProducts" type="button">← 운세 결과로 돌아가기</button></section><div class="footer">© UNSEORAP · 나에게 감춰져 있던 운을 꺼내는 시간</div></main><script>
 'use strict';
 // 운영 전 실제 카카오톡 채널 상담 URL을 입력하세요. 예: 'https://pf.kakao.com/_xxxxxxxx/chat'
 const KAKAO_CHAT_URL='https://pf.kakao.com/_xnkIxeX';
@@ -33,9 +33,9 @@ const $=id=>document.getElementById(id);const today=()=>{const d=new Date();retu
 const messages=[['작은 시작이 뜻밖의 기쁨으로 이어질 수 있는 날이에요. 미뤄 두었던 일에 첫걸음을 내디뎌 보세요.','시작'],['빠르게 답을 찾기보다 잠시 기다리는 편이 좋은 날이에요. 차분한 선택이 마음을 가볍게 해줄 거예요.','여유'],['익숙한 길에서 새로운 힌트를 발견할 수 있어요. 오늘은 주변의 작은 변화에 귀 기울여 보세요.','발견'],['마음속에 담아 둔 말을 부드럽게 전해 보세요. 진심 어린 한마디가 관계를 따뜻하게 만들 수 있어요.','소통'],['해야 할 일을 하나씩 정리하면 생각보다 여유가 생길 거예요. 오늘의 행운은 단정한 리듬에 있어요.','정돈'],['평소와 다른 선택이 기분 좋은 자극이 될 수 있어요. 가벼운 산책이나 새로운 음악을 추천해요.','변화'],['무리하게 앞서가기보다 지금까지 해낸 일을 돌아보세요. 스스로에게 주는 작은 칭찬이 힘이 될 거예요.','격려'],['좋은 생각은 기록해 두면 더 오래 빛나요. 떠오르는 아이디어를 오늘의 작은 메모로 남겨 보세요.','영감']];
 const colors=['샴페인 골드','라벤더','크림 아이보리','세이지 그린','로즈 핑크','소프트 블루'];
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
-function drawResult(){const name=$('name').value.trim();const rawBirth=$('birth').value;const date=today();if(!name||!rawBirth)return;const y=Number(rawBirth.slice(0,4)),m=Number(rawBirth.slice(4,6)),d=Number(rawBirth.slice(6,8));const parsed=new Date(y,m-1,d);const valid=/^[0-9]{8}$/.test(rawBirth)&&y>=1900&&y<=9999&&m>=1&&m<=12&&parsed.getFullYear()===y&&parsed.getMonth()===m-1&&parsed.getDate()===d;const birth=rawBirth.slice(0,4)+'-'+rawBirth.slice(4,6)+'-'+rawBirth.slice(6,8);if(!valid||birth>date){alert('생년월일 8자리를 정확히 입력해 주세요. (예: 19950823)');$('birth').focus();return}const seed=hash([date,name,birth,$('calendar').value,$('hour').value].join('|'));const msg=messages[seed%messages.length];const score=70+seed%29;const grades=['보통','좋음','아주 좋음'];const pick=(shift)=>grades[Math.floor(seed/shift)%3];$('dateLabel').textContent=date.replaceAll('-','.')+' · TODAY’S CAPSULE';$('displayName').textContent=name;$('score').textContent=score+'점';$('message').textContent='오늘의 키워드는 ‘'+msg[1]+'’ ✦\n'+msg[0];$('message').style.whiteSpace='pre-line';$('money').textContent=pick(7);$('love').textContent=pick(19);$('daily').textContent=pick(37);$('lucky').textContent='행운의 색상 · '+colors[seed%colors.length]+'  |  행운의 숫자 · '+(seed%9+1);$('result').classList.remove('hidden');$('result').focus({preventScroll:true});$('result').scrollIntoView({behavior:'smooth',block:'start'})}
+function drawResult(){const name=$('name').value.trim();const rawBirth=$('birth').value;const date=today();if(!name||!rawBirth)return;const y=Number(rawBirth.slice(0,4)),m=Number(rawBirth.slice(4,6)),d=Number(rawBirth.slice(6,8));const parsed=new Date(y,m-1,d);const valid=/^[0-9]{8}$/.test(rawBirth)&&y>=1900&&y<=9999&&m>=1&&m<=12&&parsed.getFullYear()===y&&parsed.getMonth()===m-1&&parsed.getDate()===d;const birth=rawBirth.slice(0,4)+'-'+rawBirth.slice(4,6)+'-'+rawBirth.slice(6,8);if(!valid||birth>date){alert('생년월일 8자리를 정확히 입력해 주세요. (예: 19950823)');$('birth').focus();return}const seed=hash([date,name,birth,$('calendar').value,$('hour').value].join('|'));const msg=messages[seed%messages.length];const score=70+seed%29;const grades=['보통','좋음','아주 좋음'];const pick=(shift)=>grades[Math.floor(seed/shift)%3];$('dateLabel').textContent=date.replaceAll('-','.')+' · TODAY’S CAPSULE';$('displayName').textContent=name;$('score').textContent=score+'점';$('message').textContent='오늘의 키워드는 ‘'+msg[1]+'’ ✦\n'+msg[0];$('message').style.whiteSpace='pre-line';$('money').textContent=pick(7);$('love').textContent=pick(19);$('daily').textContent=pick(37);$('lucky').textContent='행운의 색상 · '+colors[seed%colors.length]+'  |  행운의 숫자 · '+(seed%9+1);$('result').classList.remove('hidden');$('result').focus({preventScroll:true});$('result').scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('form').dispatchEvent(new CustomEvent('unseorap:valid-draw'))}
 $('form').addEventListener('submit',e=>{e.preventDefault();const btn=$('draw');if(btn.disabled)return;btn.disabled=true;btn.textContent='캡슐이 나오는 중…';$('result').classList.add('hidden');$('products').classList.add('hidden');$('again').setAttribute('aria-expanded','false');$('machine').classList.add('shaking');setTimeout(()=>{$('machine').classList.remove('shaking');$('drop').classList.remove('hidden');setTimeout(()=>{$('drop').classList.add('hidden');btn.disabled=false;btn.textContent='✦ 무료 운세 캡슐 뽑기';drawResult()},1100)},700)});
-$('copy').addEventListener('click',async()=>{const text=[$('dateLabel').textContent,$('displayName').textContent+'님의 오늘의 운세',$('score').textContent,$('message').textContent,'재물운: '+$('money').textContent,'애정운: '+$('love').textContent,'일상운: '+$('daily').textContent,$('lucky').textContent,'운서랍 · 체험형 운세'].join('\n');try{await navigator.clipboard.writeText(text);$('copy').textContent='복사 완료 ✓';setTimeout(()=>$('copy').textContent='결과 복사하기',1600)}catch{window.prompt('아래 내용을 복사해 주세요.',text)}});$('again').addEventListener('click',()=>{$('products').classList.remove('hidden');$('again').setAttribute('aria-expanded','true');$('products').focus({preventScroll:true});$('products').scrollIntoView({behavior:'smooth',block:'start'})});$('closeProducts').addEventListener('click',()=>{$('products').classList.add('hidden');$('again').setAttribute('aria-expanded','false');$('result').focus({preventScroll:true});$('result').scrollIntoView({behavior:'smooth',block:'start'})});
+$('copy').addEventListener('click',async()=>{const text=[$('dateLabel').textContent,$('displayName').textContent+'님의 오늘의 운세',$('score').textContent,$('message').textContent,'재물운: '+$('money').textContent,'애정운: '+$('love').textContent,'일상운: '+$('daily').textContent,$('lucky').textContent,'운서랍 · 체험형 운세'].join('\n');try{await navigator.clipboard.writeText(text);$('copy').textContent='복사 완료 ✓';setTimeout(()=>$('copy').textContent='결과 복사하기',1600)}catch{window.prompt('아래 내용을 복사해 주세요.',text)}});$('again').addEventListener('click',()=>{$('products').classList.remove('hidden');$('again').setAttribute('aria-expanded','true');$('products').focus({preventScroll:true});$('products').scrollIntoView({behavior:'smooth',block:'start'})});$('closeProducts').addEventListener('click',()=>{$('products').classList.add('hidden');$('again').setAttribute('aria-expanded','false');$('result').focus({preventScroll:true});$('result').scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('form').dispatchEvent(new CustomEvent('unseorap:valid-draw'))});
 
 /* 운서랍 방문 통계: 동의한 경우에만 활성화 */
 ;(function () {
@@ -121,8 +121,8 @@ $('copy').addEventListener('click',async()=>{const text=[$('dateLabel').textCont
 })();
 </script>
 <script type="module">
-/* 운서랍 고객 정보 저장: 보안 확인 전에는 비활성. */
-const ENABLE_CUSTOMER_STORAGE = false;
+/* 운서랍 고객 정보 저장: 선택 동의 + 유효한 운세 입력 시에만 저장 */
+const ENABLE_CUSTOMER_STORAGE = true;
 const firebaseConfig = {
   apiKey: 'AIzaSyAMJeMJNZutEbvX02dd-lqJOkMnbTPYK8M',
   authDomain: 'unseorap.firebaseapp.com',
@@ -142,35 +142,54 @@ if (ENABLE_CUSTOMER_STORAGE) {
       import('https://www.gstatic.com/firebasejs/13.2.0/firebase-app-check.js')
     ]);
     const app = appSdk.initializeApp(firebaseConfig, 'unseorap-visitor');
-    appCheckSDK.initializeAppCheck(app, {
+    const appCheck = appCheckSDK.initializeAppCheck(app, {
       provider: new appCheckSDK.ReCaptchaEnterpriseProvider(RECAPTCHA_ENTERPRISE_SITE_KEY),
       isTokenAutoRefreshEnabled: true
     });
+    // 실제 도메인에서 보안 확인 토큰이 정상 발급되어야 동의 체크박스를 활성화합니다.
+    await appCheckSDK.getToken(appCheck);
     const auth = authSDK.getAuth(app);
     await authSDK.setPersistence(auth, authSDK.inMemoryPersistence);
     const db = dbSDK.getFirestore(app);
-    consentBox.disabled = false;
-    statusBox.textContent = '저장 동의는 선택 사항입니다. 동의 시 1년 보관 기한이 적용됩니다.';
+    const form = document.getElementById('form');
     let submitting = false;
     let submitted = false;
-    document.getElementById('form').addEventListener('submit', async () => {
+    consentBox.disabled = false;
+    statusBox.textContent = '선택 동의 시에만 저장됩니다. 동의 없이도 무료 운세를 뽑을 수 있어요.';
+
+    consentBox.addEventListener('change', () => {
+      if (!submitting && !submitted) {
+        statusBox.textContent = consentBox.checked
+          ? '동의가 선택되었습니다. 무료 운세를 뽑으면 입력 정보가 저장됩니다.'
+          : '동의하지 않으면 고객 정보는 저장되지 않습니다.';
+      }
+    });
+
+    // 기존 submit 이벤트는 애니메이션 전에 발생하므로,
+    // 생년월일 검사까지 통과하여 실제 결과가 표시될 때 저장을 시작합니다.
+    form.addEventListener('unseorap:valid-draw', async () => {
       if (!consentBox.checked || submitting || submitted) return;
       const name = document.getElementById('name').value.trim();
       const birthDate = document.getElementById('birth').value;
       const calendarType = document.getElementById('calendar').value;
-      const birthHourRaw = document.getElementById('hour').value;
-      const birthHour = birthHourRaw === 'unknown' ? 'unknown' : birthHourRaw.padStart(2,'0');
-      const y=Number(birthDate.slice(0,4)), m=Number(birthDate.slice(4,6)), d=Number(birthDate.slice(6,8));
-      const parsed=new Date(y,m-1,d);
-      const today=new Date();
-      const valid = name.length >= 1 && name.length <= 20 && /^[0-9]{8}$/.test(birthDate)
-        && y >= 1900 && m >= 1 && m <= 12 && parsed.getFullYear() === y
-        && parsed.getMonth() === m-1 && parsed.getDate() === d
-        && parsed <= today && ['solar','lunar'].includes(calendarType)
-        && /^(unknown|0[0-9]|1[0-9]|2[0-3])$/.test(birthHour);
+      const birthHour = document.getElementById('hour').value;
+      const y = Number(birthDate.slice(0,4));
+      const m = Number(birthDate.slice(4,6));
+      const d = Number(birthDate.slice(6,8));
+      const parsed = new Date(y,m-1,d);
+      const now = new Date();
+      const valid = name.length >= 1 && name.length <= 20
+        && /^[0-9]{8}$/.test(birthDate)
+        && y >= 1900 && y <= 9999 && m >= 1 && m <= 12
+        && parsed.getFullYear() === y && parsed.getMonth() === m-1 && parsed.getDate() === d
+        && parsed <= now
+        && ['solar','lunar'].includes(calendarType)
+        && /^(unknown|[0-9]|1[0-9]|2[0-3])$/.test(birthHour);
       if (!valid) return;
+
       submitting = true;
-      statusBox.textContent = '동의한 고객 정보를 저장하고 있어요…';
+      consentBox.disabled = true;
+      statusBox.textContent = '동의한 고객 정보를 안전하게 저장하고 있어요…';
       try {
         const credentials = await authSDK.signInAnonymously(auth);
         await dbSDK.setDoc(dbSDK.doc(db,'customers',credentials.user.uid), {
@@ -178,16 +197,18 @@ if (ENABLE_CUSTOMER_STORAGE) {
           consent: true, consentVersion: 'v1', createdAt: dbSDK.serverTimestamp()
         });
         submitted = true;
-        consentBox.disabled = true;
-        statusBox.textContent = '✓ 고객 정보 저장 완료 · 수집일로부터 1년 후 삭제 대상입니다.';
-      } catch(error) {
-        statusBox.textContent = '정보 저장에 실패했습니다. 무료 운세는 계속 이용할 수 있습니다.';
-        console.error('운서랍 고객 저장 오류:',error.code || error.message);
-      } finally { submitting = false; }
+        statusBox.textContent = '✓ 정보 저장 완료! 수집일로부터 1년간 보관 후 삭제 대상입니다.';
+      } catch (error) {
+        consentBox.disabled = false;
+        statusBox.textContent = '정보 저장에 실패했어요. 무료 운세는 정상 이용할 수 있습니다.';
+        console.error('운서랍 고객 정보 저장 오류:', error.code || error.message);
+      } finally {
+        submitting = false;
+      }
     });
   } catch (error) {
-    statusBox.textContent = '고객 정보 저장 연결 오류 · 무료 운세는 정상적으로 이용할 수 있습니다.';
-    console.error('운서랍 Firebase 초기화 오류:',error.code || error.message);
+    statusBox.textContent = '저장 기능에 연결할 수 없어 비활성화했어요. 무료 운세는 정상 이용 가능합니다.';
+    console.error('운서랍 Firebase/App Check 초기화 오류:', error.code || error.message);
   }
 }
 </script>
